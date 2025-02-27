@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { WsAdapter } from '@nestjs/platform-ws';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -9,13 +10,16 @@ async function bootstrap() {
   // Enable CORS
   app.enableCors();
 
+  // Enable WebSocket
+  app.useWebSocketAdapter(new WsAdapter(app));
+
   // Global Validation Pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
       transform: true,
-    })
+    }),
   );
 
   // Swagger Documentation Setup
@@ -26,6 +30,7 @@ async function bootstrap() {
     .addTag('auth')
     .addTag('users')
     .addTag('groups')
+    .addTag('messages') // Add messages tag
     .addBearerAuth()
     .build();
 

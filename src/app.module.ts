@@ -11,6 +11,7 @@ import { GroupsModule } from './groups/groups.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ProjectsModule } from './projects/projects.module';
 import { FilesModule } from './files/files.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { FilesModule } from './files/files.module';
     GroupsModule,
     TasksModule,
     ProjectsModule,
-    FilesModule, 
+    FilesModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
