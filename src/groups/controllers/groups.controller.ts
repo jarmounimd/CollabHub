@@ -17,10 +17,11 @@ import { UpdateGroupDto } from '../dto/update-group.dto';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { ParseMongoIdPipe } from '../../common/pipes/parse-mongo-id.pipe';
 import { AddMemberDto } from '../dto/add-member.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('groups')
 @ApiTags('groups')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @UsePipes(new ValidationPipe({
   whitelist: true,

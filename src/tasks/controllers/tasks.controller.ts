@@ -1,17 +1,22 @@
-import { 
-  Controller, 
-  Get, 
-  Post, 
-  Body, 
-  Put, 
-  Param, 
-  Delete, 
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Put,
+  Param,
+  Delete,
   UseGuards,
   Query,
   Request,
-  BadRequestException
+  BadRequestException,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { TasksService } from '../services/tasks.service';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskDto } from '../dto/update-task.dto';
@@ -19,6 +24,7 @@ import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { ParseMongoIdPipe } from '../../common/pipes/parse-mongo-id.pipe';
 
 @ApiTags('tasks')
+@ApiBearerAuth()
 @Controller('tasks')
 @UseGuards(JwtAuthGuard)
 export class TasksController {
@@ -28,14 +34,7 @@ export class TasksController {
   @ApiOperation({ summary: 'Create a new task' })
   @ApiResponse({ status: 201, description: 'Task created successfully.' })
   async create(@Body() createTaskDto: CreateTaskDto, @Request() req) {
-    // Transform the user data to match expected format
-    const user = {
-      _id: req.user.userId,
-      email: req.user.email,
-      role: req.user.role
-    };
-    
-    return this.tasksService.create(createTaskDto, user);
+    return this.tasksService.create(createTaskDto, req.user.userId);
   }
 
   @Get()
@@ -54,9 +53,20 @@ export class TasksController {
   @ApiOperation({ summary: 'Update a task' })
   update(
     @Param('id', ParseMongoIdPipe) id: string,
-    @Body() updateTaskDto: UpdateTaskDto
+    @Body() updateTaskDto: UpdateTaskDto,
   ) {
     return this.tasksService.update(id, updateTaskDto);
+  }
+
+  @Put(':id/status')
+  @ApiOperation({ summary: 'Update task status' })
+  @ApiResponse({ status: 200, description: 'Task status updated successfully' })
+  async updateStatus(
+    @Param('id', ParseMongoIdPipe) id: string,
+    @Body('status') status: string,
+  ) {
+    console.log(`Updating task ${id} status to: ${status}`);
+    return this.tasksService.updateStatus(id, status);
   }
 
   @Delete(':id')

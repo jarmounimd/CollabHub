@@ -7,6 +7,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Message } from '../schemas/message.schema';
 import { CreateMessageDto } from '../dto/create-message.dto';
+import { NotificationsService } from '../../notifications/services/notifications.service';
+import { NotificationType } from '../../notifications/schemas/notification.schema';
 
 interface CreateMessageData {
   messageText: string;
@@ -18,11 +20,21 @@ interface CreateMessageData {
 export class MessagesService {
   constructor(
     @InjectModel(Message.name) private messageModel: Model<Message>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(messageData: CreateMessageData) {
-    const message = new this.messageModel(messageData);
-    return message.save();
+    const message = await this.messageModel.create(messageData);
+
+    await this.notificationsService.create({
+      type: NotificationType.NEW_MESSAGE,
+      message: `New message in project discussion`,
+      userId: messageData.senderId.toString(),
+      entityId: (message as any)._id?.toString() || message.id?.toString(),
+      entityType: 'Message',
+    });
+
+    return message;
   }
 
   async findAllByProject(projectId: string) {

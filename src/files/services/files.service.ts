@@ -1,15 +1,22 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  BadRequestException,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { File, FileDocument } from '../entities/file.entity';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { v2 as cloudinary } from 'cloudinary';
+import { NotificationsService } from '../../notifications/services/notifications.service';
+import { NotificationType } from '../../notifications/schemas/notification.schema';
 
 @Injectable()
 export class FilesService {
   constructor(
     @InjectModel(File.name) private fileModel: Model<FileDocument>,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async uploadFile(
@@ -27,7 +34,18 @@ export class FilesService {
       projectId: new Types.ObjectId(projectId),
     });
 
-    return await fileDoc.save();
+    const createdFile = await fileDoc.save();
+
+    await this.notificationsService.create({
+      type: NotificationType.FILE_SHARED,
+      message: `New file uploaded: ${file.originalname}`,
+      userId: user.userId,
+      entityId:
+        (createdFile as any)._id?.toString() || createdFile.id?.toString(),
+      entityType: 'File',
+    });
+
+    return createdFile;
   }
 
   async findAll(projectId?: string): Promise<File[]> {
@@ -57,13 +75,12 @@ export class FilesService {
     }
 
     try {
-    
-      const publicId = file.publicId || file.fileUrl.split('/').slice(-2).join('/').split('.')[0];
-      
-     
+      const publicId =
+        file.publicId ||
+        file.fileUrl.split('/').slice(-2).join('/').split('.')[0];
+
       await cloudinary.uploader.destroy(publicId);
-      
-    
+
       await this.fileModel.findByIdAndDelete(id);
     } catch (error) {
       console.error('File deletion error:', error);

@@ -8,11 +8,16 @@ import { Model, Types } from 'mongoose';
 import { Project, ProjectDocument } from '../entities/project.entity';
 import { CreateProjectDto } from '../dto/create-project.dto';
 import { UpdateProjectDto } from '../dto/update-project.dto';
+import { Group, GroupDocument } from '../../groups/entities/group.entity';
+import { NotificationsService } from '../../notifications/services/notifications.service';
+import { NotificationType } from '../../notifications/schemas/notification.schema';
 
 @Injectable()
 export class ProjectsService {
   constructor(
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
+    @InjectModel(Group.name) private groupModel: Model<GroupDocument>,
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(
@@ -57,19 +62,76 @@ export class ProjectsService {
     id: string,
     updateProjectDto: UpdateProjectDto,
   ): Promise<Project> {
-    const updateData: any = { ...updateProjectDto };
-    if (updateProjectDto.groupId) {
-      updateData.groupId = new Types.ObjectId(updateProjectDto.groupId);
-    }
+    console.log(`[ProjectsService] Updating project ${id}:`, updateProjectDto);
 
-    const project = await this.projectModel
-      .findByIdAndUpdate(id, updateData, { new: true })
-      .exec();
+    // First get the existing project to get the groupId
+    const existingProject = await this.projectModel
+      .findById(id)
+      .populate('groupId');
 
-    if (!project) {
+    if (!existingProject) {
+      console.log(`[ProjectsService] Project ${id} not found`);
       throw new NotFoundException('Project not found');
     }
-    return project;
+
+    // Update the project
+    const updatedProject = await this.projectModel
+      .findByIdAndUpdate(
+        id,
+        {
+          ...updateProjectDto,
+          groupId: existingProject.groupId, // Preserve the existing groupId
+        },
+        { new: true },
+      )
+      .populate('groupId');
+
+    if (!updatedProject) {
+      throw new NotFoundException('Project not found after update');
+    }
+
+    console.log(`[ProjectsService] Project updated:`, updatedProject);
+
+    // Get group members and notify them using the existing project's groupId
+    const group = await this.groupModel
+      .findById(existingProject.groupId)
+      .populate('members');
+
+    console.log(`[ProjectsService] Found group:`, {
+      groupId: group?._id,
+      memberCount: group?.members?.length || 0,
+    });
+
+    if (group && group.members) {
+      for (const member of group.members) {
+        console.log(
+          `[ProjectsService] Sending notification to member:`,
+          member._id,
+        );
+        try {
+          await this.notificationsService.create({
+            type: NotificationType.PROJECT_UPDATED,
+            message: `Project "${updatedProject.name}" has been updated`,
+            userId: member._id.toString(),
+            entityId:
+              (updatedProject as any)._id?.toString() ||
+              updatedProject.id?.toString(),
+            entityType: 'Project',
+          });
+          console.log(
+            `[ProjectsService] Notification sent successfully to:`,
+            member._id,
+          );
+        } catch (error) {
+          console.error(
+            `[ProjectsService] Failed to send notification:`,
+            error,
+          );
+        }
+      }
+    }
+
+    return updatedProject;
   }
 
   async remove(id: string): Promise<void> {

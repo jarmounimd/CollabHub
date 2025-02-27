@@ -1,22 +1,29 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Group, GroupDocument } from '../entities/group.entity';
 import { CreateGroupDto } from '../dto/create-group.dto';
 import { UpdateGroupDto } from '../dto/update-group.dto';
 import { User } from '../../users/entities/user.entity';
+import { NotificationsService } from '../../notifications/services/notifications.service';
+import { NotificationType } from '../../notifications/schemas/notification.schema';
 
 @Injectable()
 export class GroupsService {
   constructor(
     @InjectModel(Group.name) private groupModel: Model<GroupDocument>,
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(createGroupDto: CreateGroupDto, owner: User): Promise<Group> {
-    const memberIds = createGroupDto.members 
-      ? createGroupDto.members.map(id => new Types.ObjectId(id))
+    const memberIds = createGroupDto.members
+      ? createGroupDto.members.map((id) => new Types.ObjectId(id))
       : [];
-    
+
     const group = new this.groupModel({
       ...createGroupDto,
       owner: new Types.ObjectId(owner._id),
@@ -66,17 +73,29 @@ export class GroupsService {
 
   async addMember(groupId: string, userId: string): Promise<Group> {
     const group = await this.groupModel.findById(groupId);
+
     if (!group) {
       throw new NotFoundException('Group not found');
     }
 
     const userObjectId = new Types.ObjectId(userId);
-    if (group.members.some(memberId => memberId.equals(userObjectId))) {
+    if (group.members.some((memberId) => memberId.equals(userObjectId))) {
       throw new BadRequestException('User is already a member of this group');
     }
 
     group.members.push(userObjectId);
-    return group.save();
+    const savedGroup = await group.save();
+
+    // Add notification
+    await this.notificationsService.create({
+      type: NotificationType.GROUP_INVITATION,
+      message: `You have been added to group: ${group.name}`,
+      userId: userId,
+      entityId: (group as any)._id?.toString() || group.id?.toString(),
+      entityType: 'Group',
+    });
+
+    return savedGroup;
   }
 
   async removeMember(groupId: string, userId: string): Promise<Group> {
@@ -91,7 +110,7 @@ export class GroupsService {
     }
 
     group.members = group.members.filter(
-      memberId => !memberId.equals(userObjectId)
+      (memberId) => !memberId.equals(userObjectId),
     );
     return group.save();
   }
