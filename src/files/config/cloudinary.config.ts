@@ -1,28 +1,35 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class CloudinaryConfigService {
-  constructor(private configService: ConfigService) {
+  private readonly logger = new Logger(CloudinaryConfigService.name);
+  private readonly storage: CloudinaryStorage;
+
+  constructor() {
+    this.logger.log('Initializing CloudinaryStorage');
+
     cloudinary.config({
-      cloud_name: this.configService.get('CLOUDINARY_CLOUD_NAME'),
-      api_key: this.configService.get('CLOUDINARY_API_KEY'),
-      api_secret: this.configService.get('CLOUDINARY_API_SECRET'),
+      cloud_name: 'dwfy3lilr',
+      api_key: '672878883935546',
+      api_secret: 'xEBSun_oV3HQ1iqbU068YdnIV4A',
+    });
+
+    this.storage = new CloudinaryStorage({
+      cloudinary,
+      params: {
+        folder: 'collabhub',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'],
+        resource_type: 'auto',
+      } as any,
     });
   }
 
-  getStorage() {
-    return new CloudinaryStorage({
-      cloudinary: cloudinary,
-      params: async (req: Express.Request, file: Express.Multer.File) => {
-        return {
-          resource_type: 'auto',
-          public_id: `collabhub/${Date.now()}-${file.originalname}`,
-          transformation: [{ quality: 'auto' }],
-        };
-      },
-    });
+  getStorage(): CloudinaryStorage {
+    if (!this.storage) {
+      throw new Error('CloudinaryStorage not initialized');
+    }
+    return this.storage;
   }
 }

@@ -21,7 +21,7 @@ export class FilesService {
       fileName: file.originalname,
       fileType: file.mimetype,
       fileSize: file.size,
-      fileUrl: file.path, // Cloudinary will replace this with actual URL
+      fileUrl: file.path,
       publicId: `collabhub/${Date.now()}-${file.originalname}`,
       uploadedBy: new Types.ObjectId(user.userId),
       projectId: new Types.ObjectId(projectId),
@@ -57,13 +57,13 @@ export class FilesService {
     }
 
     try {
-      // Use stored publicId or extract from URL if needed
+    
       const publicId = file.publicId || file.fileUrl.split('/').slice(-2).join('/').split('.')[0];
       
-      // Delete from Cloudinary
+     
       await cloudinary.uploader.destroy(publicId);
       
-      // Delete from database
+    
       await this.fileModel.findByIdAndDelete(id);
     } catch (error) {
       console.error('File deletion error:', error);

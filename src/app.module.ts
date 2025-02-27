@@ -7,6 +7,10 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
 import { DatabaseModule } from './database/database.module';
+import { GroupsModule } from './groups/groups.module';
+import { TasksModule } from './tasks/tasks.module';
+import { ProjectsModule } from './projects/projects.module';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [
@@ -18,6 +22,10 @@ import { DatabaseModule } from './database/database.module';
     AuthModule,
     UsersModule,
     MailModule,
+    GroupsModule,
+    TasksModule,
+    ProjectsModule,
+    FilesModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
