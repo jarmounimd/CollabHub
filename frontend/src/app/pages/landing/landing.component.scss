@@ -1,0 +1,17 @@
+.landing-container {
+  text-align: center;
+  padding: 2rem;
+  
+  h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, #5EEAD4, #A88BDC);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p {
+    font-size: 1.5rem;
+    color: #EDEDF7;
+  }
+}
