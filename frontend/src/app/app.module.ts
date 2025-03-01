@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './shared/components/header/header.component';
 import { FooterComponent } from './shared/components/footer/footer.component';
-import { LandingComponent } from './pages/landing/landing.component';
 import { LogoComponent } from './shared/components/logo/logo.component';
 
 @NgModule({
@@ -12,17 +11,16 @@ import { LogoComponent } from './shared/components/logo/logo.component';
     AppComponent,
     HeaderComponent,
     FooterComponent,
-    LandingComponent,
-    LogoComponent,
+    LogoComponent
   ],
   imports: [
     BrowserModule,
     RouterModule.forRoot([
-      { path: '', component: LandingComponent },
-      { path: '**', redirectTo: '' },
-    ]),
+      { path: '', loadComponent: () => import('./pages/landing/landing.component').then(m => m.LandingComponent) },
+      { path: '**', redirectTo: '' }
+    ])
   ],
   providers: [],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }
