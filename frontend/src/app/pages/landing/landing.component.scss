@@ -12,15 +12,29 @@
   font-size: 2.5rem;
   font-weight: 700;
   text-align: center;
+  color: transparent;
+  margin-bottom: 2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  position: relative;
+  width: fit-content;
+  margin: 1rem auto 2rem;
+}
+
+.title::before {
+  content: "Welcome to CollabHub";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
   background: linear-gradient(135deg, #5eead4, #a88bdc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  margin-bottom: 1rem;
-  animation: typing 3s steps(20, end);
+  border-right: 3px solid #5eead4;
   white-space: nowrap;
   overflow: hidden;
-  width: 0;
-  animation-fill-mode: forwards;
+  animation: typing 3s steps(18) forwards, blink 0.8s steps(1) 4;
 }
 
 @keyframes typing {
@@ -31,9 +45,21 @@
     width: 100%;
   }
 }
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes blink {
-  0%, 100% { opacity: 0 }
-  50% { opacity: 1 }
+  0%,
+  100% {
+    border-color: transparent;
+  }
+  50% {
+    border-color: #5eead4;
+  }
 }
 
 .svg-container {
