@@ -1,12 +1,117 @@
 <header class="header">
-  <div class="logo-container">
-    <h1 class="logo">
-      <span class="logo-text">Collab</span>
-      <span class="logo-highlight">Hub</span>
-    </h1>
+  <div class="header-content">
+    <div class="logo-section">
+      <a routerLink="/" class="logo-link">
+        <app-logo></app-logo>
+      </a>
+    </div>
+
+    <ng-container *ngIf="!(isLoading$ | async); else loading">
+      <nav class="nav-section" *ngIf="isAuthenticated$ | async">
+        <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+          <mat-icon>dashboard</mat-icon>
+          <span>Dashboard</span>
+        </a>
+        <a routerLink="/projects" routerLinkActive="active" class="nav-link">
+          <mat-icon>folder</mat-icon>
+          <span>Projects</span>
+        </a>
+        <a routerLink="/tasks" routerLinkActive="active" class="nav-link">
+          <mat-icon>assignment</mat-icon>
+          <span>Tasks</span>
+        </a>
+        <a routerLink="/team" routerLinkActive="active" class="nav-link">
+          <mat-icon>group</mat-icon>
+          <span>Team</span>
+        </a>
+      </nav>
+
+      <div class="auth-section">
+        <ng-container *ngIf="!(isAuthenticated$ | async); else userMenu">
+          <a routerLink="/login" class="auth-link">
+            <mat-icon>login</mat-icon>
+            <span>Login</span>
+          </a>
+          <a routerLink="/register" class="auth-link register">
+            <mat-icon>person_add</mat-icon>
+            <span>Register</span>
+          </a>
+        </ng-container>
+
+        <ng-template #userMenu>
+          <div class="profile-container">
+            <button
+              mat-icon-button
+              (click)="toggleProfileMenu($event)"
+              class="profile-button"
+              [matTooltip]="
+                (currentUser$ | async)?.firstName +
+                ' ' +
+                (currentUser$ | async)?.lastName
+              "
+            >
+              <div class="avatar-container">
+                <img
+                  src="/assets/default-avatar.png"
+                  [alt]="(currentUser$ | async)?.firstName"
+                  class="avatar"
+                />
+                <div
+                  class="status-indicator"
+                  [class.online]="isAuthenticated$ | async"
+                ></div>
+              </div>
+              <span class="user-name">
+                {{ (currentUser$ | async)?.firstName }}
+                {{ (currentUser$ | async)?.lastName }}
+              </span>
+              <mat-icon>arrow_drop_down</mat-icon>
+            </button>
+
+            <div class="profile-menu" *ngIf="showProfileMenu">
+              <div class="menu-header">
+                <div class="user-info">
+                  <img
+                    src="/assets/default-avatar.png"
+                    [alt]="(currentUser$ | async)?.firstName"
+                    class="menu-avatar"
+                  />
+                  <div class="user-details">
+                    <span class="full-name">
+                      {{ (currentUser$ | async)?.firstName }}
+                      {{ (currentUser$ | async)?.lastName }}
+                    </span>
+                    <span class="email">{{
+                      (currentUser$ | async)?.email
+                    }}</span>
+                    <span class="role">{{ (currentUser$ | async)?.role }}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="menu-divider"></div>
+              <button class="menu-item" (click)="goToProfile()">
+                <mat-icon>person</mat-icon>
+                <span>Profile</span>
+              </button>
+              <button class="menu-item" (click)="goToSettings()">
+                <mat-icon>settings</mat-icon>
+                <span>Settings</span>
+              </button>
+              <div class="menu-divider"></div>
+              <button class="menu-item" (click)="logout()">
+                <mat-icon>exit_to_app</mat-icon>
+                <span>Logout</span>
+              </button>
+            </div>
+          </div>
+        </ng-template>
+      </div>
+    </ng-container>
+
+    <ng-template #loading>
+      <div class="header-skeleton">
+        <!-- Add a skeleton loader here if needed -->
+      </div>
+    </ng-template>
   </div>
-  <nav class="nav-buttons">
-    <button class="btn login">Sign In</button>
-    <button class="btn signup">Sign Up</button>
-  </nav>
 </header>

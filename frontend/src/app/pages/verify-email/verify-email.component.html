@@ -1,0 +1,25 @@
+<div class="verify-email-container">
+  <h2>Email Verification</h2>
+  
+  <div *ngIf="isVerifying" class="verification-process">
+    <div class="custom-spinner"></div>
+    <p>Verifying your email...</p>
+  </div>
+
+  <div *ngIf="isSuccess" class="success-animation">
+    <div class="checkmark">✓</div>
+    <p>{{ message }}</p>
+    <p class="redirect-message">Redirecting to login page...</p>
+  </div>
+
+  <div *ngIf="message && !isVerifying && !isSuccess" [class]="messageClass">
+    {{ message }}
+  </div>
+  
+  <div *ngIf="error" class="error-container">
+    <div class="error-message">{{ error }}</div>
+    <button *ngIf="email && !verificationCompleted" class="resend-button" (click)="resendVerification()">
+      Resend verification email
+    </button>
+  </div>
+</div>

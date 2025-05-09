@@ -1,0 +1,23 @@
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #1976d2;
+  font-weight: 600;
+  font-size: 1.25rem;
+
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &:hover svg {
+    transform: scale(1.1);
+  }
+
+  .logo-text {
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+}

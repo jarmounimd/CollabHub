@@ -1,0 +1,120 @@
+.verify-email-container {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px;
+  text-align: center;
+  background: #1A2236;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  
+  h2 {
+    margin-bottom: 20px;
+    color: #EDEDF7;
+    font-size: 1.8rem;
+  }
+}
+
+.verification-process {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 30px;
+  
+  .custom-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(94, 234, 212, 0.1);
+    border-radius: 50%;
+    border-top-color: #5eead4;
+    animation: spin 1s ease-in-out infinite;
+  }
+  
+  p {
+    color: #5eead4;
+    font-size: 1.1rem;
+  }
+}
+
+.success-animation {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 30px;
+  
+  .checkmark {
+    color: #5eead4;
+    font-size: 4rem;
+    animation: checkmark 0.5s ease-in-out;
+  }
+  
+  p {
+    color: #5eead4;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  
+  .redirect-message {
+    color: #a88bdc;
+    font-size: 0.9rem;
+    margin-top: 10px;
+  }
+}
+
+.error-container {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  background-color: rgba(231, 76, 60, 0.1);
+  
+  .error-message {
+    color: #e74c3c;
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+}
+
+.resend-button {
+  background: linear-gradient(135deg, #5eead4, #a88bdc);
+  color: #121826;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.success-message {
+  color: #5eead4;
+  font-size: 1.1rem;
+  margin: 20px 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+ng-lottie {
+  width: 150px;
+  height: 150px;
+}

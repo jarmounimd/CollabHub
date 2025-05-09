@@ -1,0 +1,75 @@
+<div class="layout-container">
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-header">
+      <div class="logo-container">
+        <app-collab-logo-svg></app-collab-logo-svg>
+      </div>
+      <button class="toggle-btn" (click)="toggleSidebar()">
+        <i class="material-icons">{{ isSidebarCollapsed ? 'menu_open' : 'menu' }}</i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-item">
+        <i class="material-icons">dashboard</i>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/projects" routerLinkActive="active" class="nav-item">
+        <i class="material-icons">folder</i>
+        <span>Projects</span>
+      </a>
+      <a routerLink="/tasks" routerLinkActive="active" class="nav-item">
+        <i class="material-icons">assignment</i>
+        <span>Tasks</span>
+      </a>
+      <a routerLink="/messages" routerLinkActive="active" class="nav-item">
+        <i class="material-icons">chat</i>
+        <span>Messages</span>
+      </a>
+      <a routerLink="/groups" routerLinkActive="active" class="nav-item">
+        <i class="material-icons">group</i>
+        <span>Groups</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <div class="avatar">
+          <img [src]="user?.avatar || 'assets/default-avatar.png'" alt="User avatar">
+        </div>
+        <div class="user-details" *ngIf="!isSidebarCollapsed">
+          <span class="user-name">{{ user?.firstName }} {{ user?.lastName }}</span>
+          <span class="user-email">{{ user?.email }}</span>
+        </div>
+      </div>
+      <button class="logout-btn" (click)="logout()">
+        <i class="material-icons">logout</i>
+        <span *ngIf="!isSidebarCollapsed">Logout</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <header class="top-bar">
+      <div class="search-bar">
+        <i class="material-icons">search</i>
+        <input type="text" placeholder="Search...">
+      </div>
+      <div class="top-bar-actions">
+        <button class="action-btn">
+          <i class="material-icons">notifications</i>
+          <span class="notification-badge">3</span>
+        </button>
+        <button class="action-btn">
+          <i class="material-icons">help_outline</i>
+        </button>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div> 
