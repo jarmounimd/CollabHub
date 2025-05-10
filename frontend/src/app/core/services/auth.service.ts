@@ -60,6 +60,10 @@ export class AuthService {
     return this.authState.isAuthenticated();
   }
 
+  getToken(): string | null {
+    return localStorage.getItem('token');
+  }
+
   verifyEmail(token: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/verify-email`, { token });
   }

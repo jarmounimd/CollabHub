@@ -1,0 +1,47 @@
+.confirm-dialog {
+  background-color: #121826;
+  color: #ededf7;
+  padding: 0;
+
+  h2[mat-dialog-title] {
+    font-size: 24px;
+    font-weight: 600;
+    color: #ededf7;
+    margin: 0;
+    padding: 24px 24px 0;
+  }
+
+  mat-dialog-content {
+    padding: 24px;
+    color: #ededf7;
+  }
+
+  mat-dialog-actions {
+    padding: 16px 24px;
+    margin: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+    button {
+      min-width: 100px;
+
+      &[color="warn"] {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        font-weight: 500;
+
+        &:hover:not([disabled]) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+      }
+
+      &[mat-button] {
+        color: #8b8fa3;
+
+        &:hover:not([disabled]) {
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+      }
+    }
+  }
+}

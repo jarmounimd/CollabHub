@@ -1,0 +1,76 @@
+<!-- Main Container -->
+<div class="project-details-container">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40" color="primary"></mat-spinner>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-container">
+    <mat-icon class="error-icon">error_outline</mat-icon>
+    <p>{{ error }}</p>
+  </div>
+
+  <!-- Project Details -->
+  <div *ngIf="!loading && !error && project" class="project-content">
+    <div class="project-header">
+      <div class="header-content">
+        <button mat-icon-button (click)="goBack()" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>{{ project.name }}</h1>
+        <div class="header-actions">
+          <button mat-raised-button color="primary" (click)="openEditDialog()">
+            <mat-icon>edit</mat-icon>
+            Edit Project
+          </button>
+          <button mat-raised-button color="warn" (click)="openDeleteDialog()">
+            <mat-icon>delete</mat-icon>
+            Delete Project
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project Info -->
+    <div class="project-info">
+      <div class="info-section">
+        <h2>Project Information</h2>
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="label">Description</span>
+            <p class="value">
+              {{ project.description || "No description provided" }}
+            </p>
+          </div>
+          <div class="info-item">
+            <span class="label">Group</span>
+            <p class="value">
+              {{ project.groupId ? project.groupId.name : "No group assigned" }}
+            </p>
+          </div>
+          <div class="info-item">
+            <span class="label">Created By</span>
+            <p class="value">
+              {{
+                project.createdBy
+                  ? project.createdBy.firstName +
+                    " " +
+                    project.createdBy.lastName
+                  : "Unknown"
+              }}
+            </p>
+          </div>
+          <div class="info-item">
+            <span class="label">Created At</span>
+            <p class="value">{{ project.createdAt | date : "medium" }}</p>
+          </div>
+          <div class="info-item">
+            <span class="label">Last Updated</span>
+            <p class="value">{{ project.updatedAt | date : "medium" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

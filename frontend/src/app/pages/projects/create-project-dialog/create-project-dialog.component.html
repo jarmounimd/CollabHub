@@ -1,0 +1,73 @@
+<div class="dialog-container">
+  <h2 mat-dialog-title>
+    {{ isEditMode ? "Edit Project" : "Create New Project" }}
+  </h2>
+
+  <mat-dialog-content>
+    <form [formGroup]="projectForm" class="project-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Project Name</mat-label>
+        <input
+          matInput
+          formControlName="name"
+          placeholder="Enter project name"
+          required
+        />
+        <mat-error *ngIf="projectForm.get('name')?.hasError('required')">
+          Project name is required
+        </mat-error>
+        <mat-error *ngIf="projectForm.get('name')?.hasError('minlength')">
+          Project name must be at least 3 characters
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Description</mat-label>
+        <textarea
+          matInput
+          formControlName="description"
+          placeholder="Enter project description"
+          rows="4"
+        ></textarea>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Group</mat-label>
+        <mat-select formControlName="groupId" required>
+          <mat-option *ngFor="let group of groups" [value]="group._id">
+            {{ group.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="projectForm.get('groupId')?.hasError('required')">
+          Please select a group
+        </mat-error>
+      </mat-form-field>
+
+      <div *ngIf="error" class="error-message">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ error }}</span>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="isLoading">
+      Cancel
+    </button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSubmit()"
+      [disabled]="projectForm.invalid || isLoading"
+    >
+      <mat-spinner
+        *ngIf="isLoading"
+        diameter="20"
+        class="spinner"
+      ></mat-spinner>
+      <span *ngIf="!isLoading">
+        {{ isEditMode ? "Update" : "Create" }}
+      </span>
+    </button>
+  </mat-dialog-actions>
+</div>

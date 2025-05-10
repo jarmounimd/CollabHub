@@ -1,0 +1,138 @@
+<div class="projects-container">
+  <!-- Header Section -->
+  <div class="projects-header">
+    <div class="header-content">
+      <h1>Projects</h1>
+      <p class="subtitle">Manage and track your collaborative projects</p>
+    </div>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="openCreateProjectDialog()"
+    >
+      <mat-icon>add</mat-icon>
+      New Project
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Projects Grid -->
+  <div *ngIf="!isLoading && !error" class="projects-grid">
+    <mat-card
+      *ngFor="let project of projects"
+      class="project-card"
+      [routerLink]="['/projects', project._id]"
+    >
+      <div class="card-header">
+        <h2 class="project-name">{{ project.name }}</h2>
+        <mat-chip-listbox>
+          <mat-chip
+            [style.background-color]="getProjectStatus(project).color"
+            selected
+          >
+            {{ getProjectStatus(project).label }}
+          </mat-chip>
+        </mat-chip-listbox>
+      </div>
+
+      <p class="project-description">
+        {{ project.description || "No description provided" }}
+      </p>
+
+      <div class="project-info">
+        <div class="info-item">
+          <mat-icon>group</mat-icon>
+          <span>{{ project.groupId.name }}</span>
+        </div>
+        <div class="info-item">
+          <mat-icon>person</mat-icon>
+          <span
+            >{{ project.createdBy.firstName }}
+            {{ project.createdBy.lastName }}</span
+          >
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-header">
+          <span>Evolution</span>
+          <span class="progress-value">{{ getProjectProgress(project) }}%</span>
+        </div>
+        <div class="progress-container">
+          <mat-progress-bar
+            mode="determinate"
+            [value]="getProjectProgress(project)"
+            [color]="getProjectProgress(project) === 100 ? 'accent' : 'primary'"
+          ></mat-progress-bar>
+          <div class="progress-stages">
+            <div class="stage" [class.active]="getProjectProgress(project) > 0">
+              <div class="stage-dot"></div>
+              <span>Started</span>
+            </div>
+            <div
+              class="stage"
+              [class.active]="getProjectProgress(project) > 33"
+            >
+              <div class="stage-dot"></div>
+              <span>In Progress</span>
+            </div>
+            <div
+              class="stage"
+              [class.active]="getProjectProgress(project) > 66"
+            >
+              <div class="stage-dot"></div>
+              <span>Almost Done</span>
+            </div>
+            <div
+              class="stage"
+              [class.active]="getProjectProgress(project) === 100"
+            >
+              <div class="stage-dot"></div>
+              <span>Completed</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <span class="date"
+          >Created: {{ project.createdAt | date : "mediumDate" }}</span
+        >
+        <button
+          mat-button
+          class="details-button"
+          [routerLink]="['/projects', project._id]"
+          (click)="$event.stopPropagation()"
+        >
+          <mat-icon>visibility</mat-icon>
+          View Details
+        </button>
+      </div>
+    </mat-card>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="projects.length === 0">
+      <mat-icon class="empty-icon">folder_open</mat-icon>
+      <h2>No Projects Yet</h2>
+      <p>Get started by creating your first project</p>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreateProjectDialog()"
+      >
+        <mat-icon>add</mat-icon>
+        Create Project
+      </button>
+    </div>
+  </div>
+</div>
