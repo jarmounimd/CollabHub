@@ -66,7 +66,18 @@ export class ProjectsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (projects) => {
-          this.projects = projects;
+          // Ensure all projects have required properties
+          this.projects = projects.map((project) => ({
+            ...project,
+            createdBy: project.createdBy || {
+              firstName: 'Unknown',
+              lastName: '',
+            },
+            groupId: project.groupId || {
+              name: 'No Group',
+            },
+            progress: project.progress || 0,
+          }));
           this.isLoading = false;
           this.cdr.detectChanges();
         },
