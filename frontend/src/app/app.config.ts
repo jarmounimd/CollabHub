@@ -1,5 +1,6 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
+import { MatNativeDateModule } from '@angular/material/core';
 import { routes } from './app.routes';
 import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -11,6 +12,7 @@ import { ConfirmDialogComponent } from './pages/projects/project-details/confirm
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
+    MatNativeDateModule,
     provideClientHydration(),
     provideAnimations(),
     provideHttpClient(withInterceptors([AuthInterceptor])),

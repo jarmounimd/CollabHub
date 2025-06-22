@@ -1,48 +1,41 @@
-import { Injectable, PLATFORM_ID, Inject } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 import { User } from '../models/user.model';
-import { isPlatformBrowser } from '@angular/common';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthStateService {
-  private currentUserSubject = new BehaviorSubject<User | null>(null);
-  private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
-  private isLoadingSubject = new BehaviorSubject<boolean>(true);
-  private isBrowser: boolean;
+  private user = new BehaviorSubject<User | null>(null);
+  private authenticated = new BehaviorSubject<boolean>(false);
+  private loading = new BehaviorSubject<boolean>(false);
 
-  currentUser$ = this.currentUserSubject.asObservable();
-  isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
-  isLoading$ = this.isLoadingSubject.asObservable();
+  // Public observables
+  user$ = this.user.asObservable();
+  authenticated$ = this.authenticated.asObservable();
+  isLoading$ = this.loading.asObservable();
+  currentUser$ = this.user.asObservable();
+  isAuthenticated$ = this.authenticated.asObservable();
 
-  constructor(@Inject(PLATFORM_ID) platformId: Object) {
-    this.isBrowser = isPlatformBrowser(platformId);
-  }
-
-  setAuthState(user: User | null, isAuthenticated: boolean): void {
-    this.currentUserSubject.next(user);
-    this.isAuthenticatedSubject.next(isAuthenticated);
-    this.isLoadingSubject.next(false);
-  }
-
-  setLoading(isLoading: boolean): void {
-    this.isLoadingSubject.next(isLoading);
-  }
-
-  clearAuthState(): void {
-    if (this.isBrowser) {
-      localStorage.removeItem('user');
-      localStorage.removeItem('token');
-    }
-    this.setAuthState(null, false);
+  getUser(): User | null {
+    return this.user.getValue();
   }
 
   isAuthenticated(): boolean {
-    return this.isAuthenticatedSubject.value;
+    return this.authenticated.getValue();
   }
 
-  getCurrentUser(): User | null {
-    return this.currentUserSubject.value;
+  setAuthState(user: User | null, isAuthenticated: boolean): void {
+    this.user.next(user);
+    this.authenticated.next(isAuthenticated);
+  }
+
+  clearAuthState(): void {
+    this.user.next(null);
+    this.authenticated.next(false);
+  }
+
+  setLoading(isLoading: boolean): void {
+    this.loading.next(isLoading);
   }
 }

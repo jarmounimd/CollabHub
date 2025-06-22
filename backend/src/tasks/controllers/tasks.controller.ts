@@ -38,9 +38,41 @@ export class TasksController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all tasks' })
-  findAll(@Query('projectId') projectId?: string) {
-    return this.tasksService.findAll(projectId);
+  @ApiOperation({ summary: 'Get tasks with filters' })
+  async findAll(
+    @Request() req,
+    @Query('projectId') projectId?: string,
+    @Query('assignedTo') assignedTo?: string,
+    @Query('createdBy') createdBy?: string,
+  ) {
+    // User should only see tasks they have access to
+    const userId = req.user.userId;
+    return this.tasksService.findUserAccessibleTasks(userId, {
+      projectId,
+      assignedTo,
+      createdBy,
+    });
+  }
+
+  @Get('project/:projectId')
+  @ApiOperation({ summary: 'Get all tasks for a specific project' })
+  findProjectTasks(@Param('projectId', ParseMongoIdPipe) projectId: string) {
+    return this.tasksService.findTasksByProject(projectId);
+  }
+
+  @Get('user/:userId')
+  @ApiOperation({ summary: 'Get tasks for a specific user' })
+  findUserTasks(
+    @Param('userId', ParseMongoIdPipe) userId: string,
+    @Query('type') type: 'assigned' | 'created' = 'assigned',
+  ) {
+    return this.tasksService.findUserTasks(userId, type);
+  }
+
+  @Get('project/:projectId/stats')
+  @ApiOperation({ summary: 'Get task statistics for a project' })
+  getProjectTaskStats(@Param('projectId', ParseMongoIdPipe) projectId: string) {
+    return this.tasksService.findTaskStats(projectId);
   }
 
   @Get(':id')

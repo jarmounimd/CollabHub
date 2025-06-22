@@ -1,0 +1,77 @@
+<div class="details-dialog">
+  <div class="dialog-header">
+    <mat-icon class="dialog-icon">add_task</mat-icon>
+    <h2>Create Task</h2>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="submit()" class="dialog-content">
+    <div class="dialog-section">
+      <label>Title:</label>
+      <input
+        matInput
+        formControlName="title"
+        required
+        placeholder="Task title"
+      />
+    </div>
+    <div class="dialog-section">
+      <label>Description:</label>
+      <textarea
+        matInput
+        formControlName="description"
+        rows="2"
+        placeholder="Task description"
+      ></textarea>
+    </div>
+    <div class="dialog-section">
+      <label>Project:</label>
+      <mat-select formControlName="projectId" required>
+        <mat-option *ngFor="let project of projects" [value]="project._id">
+          {{ project.name }}
+        </mat-option>
+      </mat-select>
+    </div>
+    <div class="dialog-section">
+      <label>Assign To:</label>
+      <mat-select formControlName="assignedTo">
+        <mat-option *ngFor="let member of members" [value]="member._id">
+          {{ member.firstName }} {{ member.lastName }} ({{ member.email }})
+        </mat-option>
+      </mat-select>
+    </div>
+    <div class="dialog-section">
+      <label>Due Date:</label>
+      <input
+        matInput
+        [matDatepicker]="picker"
+        formControlName="dueDate"
+        placeholder="Choose a date"
+        style="width: 120px"
+      />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </div>
+    <div class="dialog-section">
+      <label>Status:</label>
+      <mat-select formControlName="status">
+        <mat-option value="To Do">To Do</mat-option>
+        <mat-option value="In Progress">In Progress</mat-option>
+        <mat-option value="Done">Done</mat-option>
+      </mat-select>
+    </div>
+    <div class="dialog-actions">
+      <button
+        mat-stroked-button
+        color="primary"
+        type="submit"
+        [disabled]="loading || form.invalid"
+      >
+        <mat-icon>check_circle</mat-icon>
+        Create
+      </button>
+      <button mat-button type="button" (click)="close()">
+        <mat-icon>close</mat-icon>
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

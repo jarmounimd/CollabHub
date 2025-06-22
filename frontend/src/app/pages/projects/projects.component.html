@@ -52,14 +52,14 @@
       <div class="project-info">
         <div class="info-item">
           <mat-icon>group</mat-icon>
-          <span>{{ project.groupId?.name || "No Group" }}</span>
+          <span>{{ project.groupId.name || "No Group" }}</span>
         </div>
         <div class="info-item">
           <mat-icon>person</mat-icon>
           <span>
-            {{ project.createdBy?.firstName || "Unknown" }}
-            {{ project.createdBy?.lastName || "" }}
+            {{ project.createdBy.firstName || "Unknown" }}
           </span>
+          <span>{{ project.createdBy.lastName || "" }}</span>
         </div>
       </div>
 

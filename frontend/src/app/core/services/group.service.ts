@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { User } from '../models/user.model';
 
 export interface Group {
   _id: string;
@@ -42,39 +43,44 @@ export interface AddMemberDto {
   providedIn: 'root',
 })
 export class GroupService {
-  private apiUrl = `${environment.apiUrl}/groups`;
+  // Use the direct backend URL
+  private baseUrl = 'http://localhost:3000';
 
   constructor(private http: HttpClient) {}
 
   getGroups(): Observable<Group[]> {
-    return this.http.get<Group[]>(this.apiUrl);
+    return this.http.get<Group[]>(`${this.baseUrl}/groups`);
   }
 
   getGroup(id: string): Observable<Group> {
-    return this.http.get<Group>(`${this.apiUrl}/${id}`);
+    return this.http.get<Group>(`${this.baseUrl}/groups/${id}`);
   }
 
   createGroup(group: CreateGroupDto): Observable<Group> {
-    return this.http.post<Group>(this.apiUrl, group);
+    return this.http.post<Group>(`${this.baseUrl}/groups`, group);
   }
 
   updateGroup(id: string, group: UpdateGroupDto): Observable<Group> {
-    return this.http.put<Group>(`${this.apiUrl}/${id}`, group);
+    return this.http.put<Group>(`${this.baseUrl}/groups/${id}`, group);
   }
 
   deleteGroup(id: string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+    return this.http.delete<void>(`${this.baseUrl}/groups/${id}`);
   }
 
   addMember(groupId: string, userId: string): Observable<Group> {
-    return this.http.post<Group>(`${this.apiUrl}/${groupId}/members`, {
+    return this.http.post<Group>(`${this.baseUrl}/groups/${groupId}/members`, {
       userId,
     });
   }
 
   removeMember(groupId: string, userId: string): Observable<Group> {
     return this.http.delete<Group>(
-      `${this.apiUrl}/${groupId}/members/${userId}`
+      `${this.baseUrl}/groups/${groupId}/members/${userId}`
     );
+  }
+
+  getGroupMembers(groupId: string): Observable<User[]> {
+    return this.http.get<User[]>(`${this.baseUrl}/groups/${groupId}/members`);
   }
 }

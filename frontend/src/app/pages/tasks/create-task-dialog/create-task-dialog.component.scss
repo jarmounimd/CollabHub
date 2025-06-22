@@ -1,0 +1,140 @@
+.details-dialog {
+  min-width: 350px;
+  max-width: 480px;
+  background: linear-gradient(135deg, #0f2349 0%, #000000 100%);
+  color: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+  padding: 0;
+  overflow: hidden;
+
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 32px 36px 18px 38px;
+    background: linear-gradient(
+      90deg,
+      rgba(79, 172, 254, 0.12) 0%,
+      rgba(0, 242, 254, 0.1) 100%
+    );
+    border-bottom: 1.5px solid rgba(79, 172, 254, 0.13);
+
+    .dialog-icon {
+      font-size: 38px;
+      color: #4facfe;
+      margin-right: 10px;
+      filter: drop-shadow(0 2px 8px #4facfe33);
+      flex-shrink: 0;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.01em;
+      text-shadow: 0 2px 8px rgba(79, 172, 254, 0.13);
+      flex: 1;
+    }
+  }
+
+  .dialog-content {
+    padding: 0 38px 20px 38px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    .dialog-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 8px;
+
+      label {
+        font-weight: 600;
+        color: #4facfe;
+        min-width: 110px;
+        margin: 0;
+        display: inline-block;
+      }
+      input[matInput],
+      textarea[matInput],
+      mat-select {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 10px;
+        color: #fff;
+        border: none;
+        padding: 8px 12px;
+        font-size: 1rem;
+        box-shadow: none;
+      }
+      mat-select {
+        min-width: 0;
+      }
+      ::ng-deep .mat-select-value {
+        color: #fff;
+      }
+      ::ng-deep .mat-form-field-label {
+        color: #4facfe;
+      }
+    }
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 38px 26px 38px;
+    background: linear-gradient(
+      90deg,
+      rgba(79, 172, 254, 0.1) 0%,
+      rgba(0, 242, 254, 0.08) 100%
+    );
+    border-top: 1.5px solid rgba(79, 172, 254, 0.1);
+
+    button {
+      min-width: 110px;
+      font-weight: 600;
+      font-size: 15px;
+      border-radius: 18px;
+      padding: 7px 22px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 8px rgba(79, 172, 254, 0.13);
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      color: #fff;
+      border: none;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+
+      &:hover {
+        background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
+        color: #fff;
+        box-shadow: 0 4px 16px rgba(79, 172, 254, 0.18);
+      }
+
+      mat-icon {
+        font-size: 20px;
+        margin-right: 5px;
+      }
+    }
+
+    button[type="button"] {
+      background: transparent;
+      color: #b3e5fc;
+      box-shadow: none;
+
+      &:hover {
+        background: rgba(79, 172, 254, 0.08);
+        color: #4facfe;
+      }
+    }
+  }
+
+  .mat-datepicker-toggle {
+    z-index: 9999;
+    position: relative;
+    cursor: pointer;
+  }
+}

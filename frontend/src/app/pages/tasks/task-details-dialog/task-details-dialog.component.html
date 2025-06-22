@@ -1,0 +1,47 @@
+<div class="details-dialog">
+  <div class="dialog-header">
+    <mat-icon class="dialog-icon">assignment</mat-icon>
+    <h2>{{ data.title }}</h2>
+    <mat-chip [style.background-color]="data.statusColor" selected>
+      {{ data.status }}
+    </mat-chip>
+  </div>
+  <div class="dialog-content">
+    <div class="dialog-section">
+      <label>Description:</label>
+      <p>{{ data.description || "No description provided." }}</p>
+    </div>
+    <div class="dialog-section">
+      <label>Project:</label>
+      <span>{{ data.projectName }}</span>
+    </div>
+    <div class="dialog-section">
+      <label>Assigned To:</label>
+      <span>{{ data.assigneeName }}</span>
+    </div>
+    <div class="dialog-section">
+      <label>Due Date:</label>
+      <span>{{
+        data.dueDate ? (data.dueDate | date : "mediumDate") : "No due date"
+      }}</span>
+    </div>
+    <div class="dialog-section">
+      <label>Created By:</label>
+      <span>{{ data.createdByName }}</span>
+    </div>
+    <div class="dialog-section">
+      <label>Created At:</label>
+      <span>{{ data.createdAt | date : "medium" }}</span>
+    </div>
+    <div class="dialog-section" *ngIf="data.updatedAt">
+      <label>Last Updated:</label>
+      <span>{{ data.updatedAt | date : "medium" }}</span>
+    </div>
+  </div>
+  <div class="dialog-actions">
+    <button mat-stroked-button color="primary" (click)="close()">
+      <mat-icon>close</mat-icon>
+      Close
+    </button>
+  </div>
+</div>

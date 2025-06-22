@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -14,6 +15,8 @@ import { NotificationType } from '../../notifications/schemas/notification.schem
 
 @Injectable()
 export class GroupsService {
+  private readonly logger = new Logger(GroupsService.name);
+
   constructor(
     @InjectModel(Group.name) private groupModel: Model<GroupDocument>,
     private notificationsService: NotificationsService,
@@ -33,19 +36,65 @@ export class GroupsService {
   }
 
   async findAll(): Promise<Group[]> {
-    return this.groupModel
+    const groups = await this.groupModel
       .find()
       .populate('owner', 'firstName lastName email')
-      .populate('members', 'firstName lastName email')
+      .populate({
+        path: 'members',
+        model: 'User',
+        select: 'firstName lastName email',
+      })
       .exec();
+
+    this.logger.log(`[findAll] groups: ${JSON.stringify(groups, null, 2)}`);
+    if (groups.length > 0) {
+      this.logger.log(
+        `[findAll] first group members: ${JSON.stringify(
+          groups[0].members,
+          null,
+          2,
+        )}`,
+      );
+      if (groups[0].members && groups[0].members.length > 0) {
+        this.logger.log(
+          `[findAll] first member keys: ${Object.keys(groups[0].members[0])}`,
+        );
+        this.logger.log(
+          `[findAll] first member value: ${JSON.stringify(
+            groups[0].members[0],
+            null,
+            2,
+          )}`,
+        );
+      }
+    }
+    return groups;
   }
 
   async findOne(id: string): Promise<Group> {
     const group = await this.groupModel
       .findById(id)
       .populate('owner', 'firstName lastName email')
-      .populate('members', 'firstName lastName email')
+      .populate({
+        path: 'members',
+        model: 'User',
+        select: 'firstName lastName email',
+      })
       .exec();
+
+    this.logger.log(`[findOne] group: ${JSON.stringify(group, null, 2)}`);
+    if (group && group.members && group.members.length > 0) {
+      this.logger.log(
+        `[findOne] first member keys: ${Object.keys(group.members[0])}`,
+      );
+      this.logger.log(
+        `[findOne] first member value: ${JSON.stringify(
+          group.members[0],
+          null,
+          2,
+        )}`,
+      );
+    }
 
     if (!group) {
       throw new NotFoundException('Group not found');
@@ -73,17 +122,20 @@ export class GroupsService {
 
   async addMember(groupId: string, userId: string): Promise<Group> {
     const group = await this.groupModel.findById(groupId);
-
-    if (!group) {
-      throw new NotFoundException('Group not found');
-    }
+    if (!group) throw new NotFoundException('Group not found');
 
     const userObjectId = new Types.ObjectId(userId);
-    if (group.members.some((memberId) => memberId.equals(userObjectId))) {
+    if (
+      group.members.some((memberId: any) =>
+        memberId instanceof Types.ObjectId
+          ? memberId.equals(userObjectId)
+          : memberId._id.toString() === userObjectId.toString(),
+      )
+    ) {
       throw new BadRequestException('User is already a member of this group');
     }
 
-    group.members.push(userObjectId);
+    group.members.push(new Types.ObjectId(userId));
     const savedGroup = await group.save();
 
     // Add notification
@@ -100,18 +152,61 @@ export class GroupsService {
 
   async removeMember(groupId: string, userId: string): Promise<Group> {
     const group = await this.groupModel.findById(groupId);
-    if (!group) {
-      throw new NotFoundException('Group not found');
-    }
+    if (!group) throw new NotFoundException('Group not found');
 
     const userObjectId = new Types.ObjectId(userId);
-    if (group.owner.equals(userObjectId)) {
+    if (
+      (group.owner instanceof Types.ObjectId &&
+        group.owner.equals(userObjectId)) ||
+      (typeof group.owner === 'object' &&
+        group.owner &&
+        'id' in group.owner &&
+        group.owner.id.toString() === userObjectId.toString()) ||
+      (typeof group.owner === 'object' &&
+        group.owner &&
+        '_id' in group.owner &&
+        group.owner._id.toString() === userObjectId.toString())
+    ) {
       throw new BadRequestException('Cannot remove the group owner');
     }
 
-    group.members = group.members.filter(
-      (memberId) => !memberId.equals(userObjectId),
-    );
+    group.members = group.members.filter((memberId: any) => {
+      if (memberId instanceof Types.ObjectId) {
+        return !memberId.equals(userObjectId);
+      }
+      return memberId._id.toString() !== userObjectId.toString();
+    }) as any;
+
     return group.save();
+  }
+
+  async getMembers(groupId: string) {
+    const group = await this.groupModel
+      .findById(groupId)
+      .populate('owner', 'firstName lastName email')
+      .populate({
+        path: 'members',
+        model: 'User',
+        select: 'firstName lastName email',
+      })
+      .exec();
+
+    this.logger.log(`[getMembers] group: ${JSON.stringify(group, null, 2)}`);
+    if (group && group.members && group.members.length > 0) {
+      this.logger.log(
+        `[getMembers] first member keys: ${Object.keys(group.members[0])}`,
+      );
+      this.logger.log(
+        `[getMembers] first member value: ${JSON.stringify(
+          group.members[0],
+          null,
+          2,
+        )}`,
+      );
+    }
+
+    if (!group) throw new NotFoundException('Group not found');
+
+    return group; // Return the whole group, not just members
   }
 }

@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
   ngOnInit() {
     // Check if already logged in
     if (this.authService.isAuthenticated()) {
-      window.location.href = '/dashboard';
+      this.router.navigate(['/dashboard']);
     }
   }
 
@@ -68,8 +68,6 @@ export class LoginComponent implements OnInit {
       password: this.loginForm.get('password')?.value,
     };
 
-    console.log('Attempting login...');
-
     this.authService
       .login(loginData)
       .pipe(
@@ -78,13 +76,11 @@ export class LoginComponent implements OnInit {
         })
       )
       .subscribe({
-        next: (response) => {
-          console.log('Login successful, navigating...');
-          // Use window.location for a full page reload
-          window.location.href = '/dashboard';
+        next: () => {
+          // Use Router instead of window.location
+          this.router.navigate(['/dashboard']);
         },
         error: (error) => {
-          console.error('Login error:', error);
           this.errorMessage =
             error.error?.message ||
             'Login failed. Please check your credentials.';

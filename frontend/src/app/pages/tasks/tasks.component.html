@@ -1,0 +1,93 @@
+<div class="tasks-container">
+  <!-- Header Section -->
+  <div class="tasks-header">
+    <div class="header-content">
+      <h1>Tasks</h1>
+      <p class="subtitle">Manage and track your assigned and created tasks</p>
+    </div>
+    <button mat-raised-button color="primary" (click)="openCreateTaskDialog()">
+      <mat-icon>add</mat-icon>
+      New Task
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error" class="error-container">
+    <mat-icon color="warn">error_outline</mat-icon>
+    <span>{{ error }}</span>
+  </div>
+
+  <!-- Tasks Row -->
+  <div *ngIf="!loading && !error" class="tasks-grid">
+    <mat-card
+      *ngFor="let task of tasks"
+      class="task-card"
+      [routerLink]="['/tasks', task._id]"
+    >
+      <div class="card-header">
+        <h2 class="task-title">{{ task.title }}</h2>
+        <mat-chip
+          [style.background-color]="getStatusColor(task.status)"
+          selected
+        >
+          {{ task.status }}
+        </mat-chip>
+      </div>
+
+      <div class="task-description">
+        {{ task.description || "No description provided." }}
+      </div>
+
+      <div class="task-info">
+        <div class="info-item">
+          <mat-icon>person</mat-icon>
+          <span>{{ getAssigneeName(task) }}</span>
+        </div>
+        <div
+          class="info-item"
+          *ngIf="task.dueDate"
+          [class.overdue]="isOverdue(task.dueDate)"
+        >
+          <mat-icon>event</mat-icon>
+          <span>{{ task.dueDate | date : "mediumDate" }}</span>
+        </div>
+      </div>
+
+      <div class="card-footer">
+        <span class="date"
+          >Created: {{ task.createdAt | date : "mediumDate" }}</span
+        >
+        <button
+          mat-stroked-button
+          color="primary"
+          class="details-button"
+          type="button"
+          (click)="openTaskDetailsDialog(task); $event.stopPropagation()"
+        >
+          <mat-icon>visibility</mat-icon>
+          View Details
+        </button>
+      </div>
+    </mat-card>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="tasks.length === 0">
+      <mat-icon class="empty-icon">assignment</mat-icon>
+      <h2>No Tasks Yet</h2>
+      <p>Get started by creating your first task</p>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="openCreateTaskDialog()"
+      >
+        <mat-icon>add</mat-icon>
+        Create Task
+      </button>
+    </div>
+  </div>
+</div>

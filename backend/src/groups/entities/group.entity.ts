@@ -13,10 +13,10 @@ export class Group {
   description: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User', required: true })
-  owner: Types.ObjectId;
+  owner: Types.ObjectId | User;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }], default: [] })
-  members: Types.ObjectId[];
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'User' }] })
+  members: (Types.ObjectId | User)[];
 }
 
 export const GroupSchema = SchemaFactory.createForClass(Group);

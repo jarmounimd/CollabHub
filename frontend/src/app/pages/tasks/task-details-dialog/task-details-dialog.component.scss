@@ -1,0 +1,124 @@
+.details-dialog {
+  min-width: 350px;
+  max-width: 480px;
+  background: linear-gradient(135deg, #0f2349 0%, #000000 100%);
+  color: #fff;
+  border-radius: 22px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25);
+  padding: 0;
+  overflow: hidden;
+
+  .dialog-header {
+    display: flex;
+    align-items: center;
+    padding: 28px 36px 16px 28px; // More left padding for icon
+    background: linear-gradient(
+      90deg,
+      rgba(79, 172, 254, 0.12) 0%,
+      rgba(0, 242, 254, 0.1) 100%
+    );
+    border-bottom: 1.5px solid rgba(79, 172, 254, 0.13);
+    gap: 18px;
+
+    .dialog-icon {
+      font-size: 30px;
+      color: #4facfe;
+      margin-right: 18px;
+      margin-left: 0; 
+      filter: drop-shadow(0 2px 8px #4facfe33);
+      flex-shrink: 0;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.01em;
+      text-shadow: 0 2px 8px rgba(79, 172, 254, 0.13);
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .status-chip {
+      font-size: 15px;
+      height: 30px;
+      color: #fff;
+      font-weight: 500;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 12px;
+      margin-left: 18px;
+      box-shadow: 0 2px 8px rgba(79, 172, 254, 0.13);
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+  }
+
+  .dialog-content {
+    padding: 20px 44px 22px 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+
+    .dialog-section {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      label {
+        font-weight: 600;
+        color: #4facfe;
+        min-width: 110px;
+        margin: 0;
+        display: inline-block;
+      }
+      p,
+      span {
+        color: #fff;
+        margin: 0;
+        word-break: break-word;
+        white-space: pre-line;
+        flex: 1;
+      }
+    }
+  }
+
+  .dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0;
+    padding: 20px;
+    background: linear-gradient(
+      90deg,
+      rgba(79, 172, 254, 0.1) 0%,
+      rgba(0, 242, 254, 0.08) 100%
+    );
+    border-top: 1.5px solid rgba(79, 172, 254, 0.1);
+
+    button {
+      min-width: 120px;
+      font-weight: 600;
+      font-size: 15px;
+      border-radius: 20px;
+      padding: 8px 26px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 8px rgba(79, 172, 254, 0.13);
+      margin-left: 0;
+      margin-right: 0;
+      cursor: pointer;
+
+      mat-icon {
+        font-size: 22px;
+        margin-right: 8px;
+        margin-left: -4px;
+      }
+    }
+  }
+}

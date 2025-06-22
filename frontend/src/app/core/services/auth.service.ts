@@ -46,14 +46,10 @@ export class AuthService {
     this.authState.clearAuthState();
   }
 
-  getCurrentUser(): Observable<User | null> {
-    return this.http.get<User>(`${this.apiUrl}/me`).pipe(
-      tap((user) => {
-        if (user) {
-          this.authState.setAuthState(user, true);
-        }
-      })
-    );
+  // Add getCurrentUserId method
+  getCurrentUserId(): string | null {
+    const user = this.authState.getUser();
+    return user?._id || null;
   }
 
   isAuthenticated(): boolean {
