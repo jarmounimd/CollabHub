@@ -44,6 +44,14 @@ export const routes: Routes = [
     canActivate: [authGuard],
   },
   {
+    path: 'collaboration',
+    loadComponent: () =>
+      import('./pages/collaboration/collaboration.component').then(
+        (m) => m.CollaborationComponent
+      ),
+    canActivate: [authGuard],
+  },
+  {
     path: 'profile',
     loadComponent: () =>
       import('./pages/profile/profile.component').then(

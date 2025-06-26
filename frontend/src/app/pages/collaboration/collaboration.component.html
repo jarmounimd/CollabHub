@@ -1,0 +1,230 @@
+<div class="collab-root">
+  <!-- Projects Page: Show when no project is selected -->
+  <div class="projects-page" *ngIf="!selectedProject">
+    <div class="projects-header">
+      <mat-icon class="header-icon">folder</mat-icon>
+      <h2>All Projects</h2>
+    </div>
+    <div class="welcome-message">
+      <mat-icon>emoji_people</mat-icon>
+      <span>
+        Welcome to your Collaboration Hub!<br />
+        Select a project below to enter its chat room and start collaborating
+        with your team.
+      </span>
+    </div>
+    <div *ngIf="isLoading" class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    <div *ngIf="error" class="error-container">
+      <mat-icon color="warn">error_outline</mat-icon>
+      <span>{{ error }}</span>
+    </div>
+    <div class="projects-list" *ngIf="!isLoading && !error">
+      <div
+        class="project-card"
+        *ngFor="let project of projects"
+        (click)="selectProject(project)"
+        tabindex="0"
+        (keydown.enter)="selectProject(project)"
+        [class.active]="isActiveProject(project)"
+      >
+        <mat-icon>folder</mat-icon>
+        <div class="project-info">
+          <div class="project-name">{{ project.name }}</div>
+          <div class="project-desc">{{ project.description }}</div>
+        </div>
+      </div>
+      <div *ngIf="projects.length === 0" class="empty-chat">
+        <mat-icon>info</mat-icon>
+        <span>No projects found.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Page: Show when a project is selected -->
+  <main class="collab-main" *ngIf="selectedProject">
+    <div class="collab-chat-container">
+      <div class="collab-header">
+        <button
+          mat-icon-button
+          (click)="selectedProject = null"
+          title="Back to projects"
+        >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <mat-icon>group</mat-icon>
+        <span>{{ selectedProject.name }} Collaboration</span>
+        <button
+          mat-icon-button
+          class="shared-files-btn"
+          (click)="showFilesDialog()"
+          title="Show Shared Files"
+        >
+          <mat-icon class="shared-files-animated-icon">folder_shared</mat-icon>
+        </button>
+      </div>
+      <div class="collab-messages" #messagesScroll>
+        <div
+          *ngFor="let msg of messages"
+          class="message-bubble"
+          [ngClass]="getMessageClass(msg)"
+        >
+          <div class="sender-name">
+            <ng-container *ngIf="isSenderObject(msg.senderId); else showId">
+              {{
+                msg.senderId._id === currentUserId
+                  ? "You"
+                  : msg.senderId.firstName + " " + msg.senderId.lastName
+              }}
+            </ng-container>
+            <ng-template #showId>
+              {{ msg.senderId === currentUserId ? "You" : msg.senderId }}
+            </ng-template>
+          </div>
+          <div class="message-content">
+            {{ msg.messageText }}
+            <div *ngIf="msg.attachments?.length" class="attachments">
+              <a
+                *ngFor="let att of msg.attachments"
+                [href]="att"
+                target="_blank"
+              >
+                <mat-icon>attach_file</mat-icon> Attachment
+              </a>
+            </div>
+          </div>
+          <div class="timestamp">{{ msg.createdAt | date : "shortTime" }}</div>
+        </div>
+        <div *ngIf="messages.length === 0" class="empty-chat">
+          <mat-icon>chat_bubble_outline</mat-icon>
+          <span>No messages yet. Start the conversation!</span>
+        </div>
+      </div>
+      <form
+        [formGroup]="messageForm"
+        (ngSubmit)="sendMessage()"
+        class="collab-input-row"
+        autocomplete="off"
+      >
+        <input
+          formControlName="messageText"
+          placeholder="Type a message..."
+          autocomplete="off"
+        />
+        <label class="file-upload-label">
+          <input
+            type="file"
+            (change)="onFileSelected($event)"
+            [disabled]="uploading"
+            hidden
+          />
+          <mat-icon class="file-upload-icon" [class.uploading]="uploading"
+            >attach_file</mat-icon
+          >
+        </label>
+        <button
+          mat-icon-button
+          type="submit"
+          [disabled]="
+            !messageForm.value.messageText &&
+            !messageForm.value.attachments?.length
+          "
+        >
+          <mat-icon>send</mat-icon>
+        </button>
+      </form>
+    </div>
+  </main>
+
+  <!-- Shared Files Slide-Over Panel -->
+  <div
+    class="files-panel-backdrop"
+    *ngIf="showFilesPanel"
+    (click)="showFilesPanel = false"
+  ></div>
+  <div class="files-panel" *ngIf="showFilesPanel" [@fadeInRight]>
+    <div class="files-panel-header">
+      <mat-icon>folder_shared</mat-icon>
+      <span>Shared Files</span>
+      <button mat-icon-button (click)="showFilesPanel = false">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <ul>
+      <li *ngFor="let file of files">
+        <a [href]="file.fileUrl" target="_blank" class="file-link" download>
+          <mat-icon class="file-icon">{{
+            getFileIcon(file.fileType)
+          }}</mat-icon>
+          <span class="file-name">{{ file.fileName }}</span>
+        </a>
+        <span class="file-size" *ngIf="file.fileSize">
+          {{ file.fileSize | number }} bytes
+        </span>
+        <a
+          mat-icon-button
+          class="download-btn"
+          [attr.aria-label]="'Download ' + file.fileName"
+          [href]="file.fileUrl"
+          download
+          target="_blank"
+        >
+          <mat-icon>download</mat-icon>
+        </a>
+      </li>
+      <li *ngIf="files.length === 0" class="no-files">
+        <mat-icon>info</mat-icon> No files shared yet.
+      </li>
+    </ul>
+  </div>
+
+  <!-- Shared Files Dialog -->
+  <div
+    class="files-dialog-backdrop"
+    *ngIf="showFilesDialogOpen"
+    (click)="closeFilesDialog()"
+  ></div>
+  <div
+    class="files-dialog"
+    *ngIf="showFilesDialogOpen"
+    tabindex="0"
+    (keydown.escape)="closeFilesDialog()"
+  >
+    <div class="files-dialog-header">
+      <mat-icon>folder_shared</mat-icon>
+      <span>Shared Files</span>
+      <button mat-icon-button (click)="closeFilesDialog()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <ul>
+      <li *ngFor="let file of files">
+        <a [href]="file.fileUrl" target="_blank" class="file-link" download>
+          <mat-icon class="file-icon">{{
+            getFileIcon(file.fileType)
+          }}</mat-icon>
+          <span class="file-name">{{ file.fileName }}</span>
+        </a>
+        <span class="file-size" *ngIf="file.fileSize">
+          {{ file.fileSize | number }} bytes
+        </span>
+        <a
+          class="download-btn"
+          [attr.aria-label]="'Download ' + file.fileName"
+          (click)="
+            downloadFile(file);
+            $event.preventDefault();
+            $event.stopPropagation()
+          "
+          href="#"
+        >
+          <mat-icon>download</mat-icon>
+        </a>
+      </li>
+      <li *ngIf="files.length === 0" class="no-files">
+        <mat-icon>info</mat-icon> No files shared yet.
+      </li>
+    </ul>
+  </div>
+</div>

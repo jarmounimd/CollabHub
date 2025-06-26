@@ -21,7 +21,7 @@
     border-bottom: 1.5px solid rgba(79, 172, 254, 0.13);
 
     .dialog-icon {
-      font-size: 38px;
+      font-size: 26px;
       color: #4facfe;
       margin-right: 10px;
       filter: drop-shadow(0 2px 8px #4facfe33);
@@ -39,7 +39,7 @@
   }
 
   .dialog-content {
-    padding: 0 38px 20px 38px;
+    padding: 20px 38px 20px 38px;
     display: flex;
     flex-direction: column;
     gap: 18px;
